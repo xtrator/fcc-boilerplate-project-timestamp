@@ -24,13 +24,15 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-// first test
+// second test
+// third test
 app.get("/api/:date", param("date").isDate(), function (req, res, next) {
   try {
     validationResult(req).throw();
     date = new Date(req.params.date);
+    utc = date.toUTCString();
     unix = date.getTime();
-    res.json({ unix });
+    res.json({ unix, utc });
   } catch (err) {
     res.status(400).json({ error: err });
   }
