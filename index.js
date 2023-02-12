@@ -26,15 +26,25 @@ app.get("/api/hello", function (req, res) {
 
 app.get(
   "/api/:date",
-  oneOf([check("date").isDate(), check("date").isNumeric()]),
+  check("date").custom((value) => {
+    isValid = Date.parse(value);
+    isNumeric = value.match(/^\d+$/);
+    if (isValid) {
+      return true;
+    } else if (isNumeric) {
+      return true;
+    } else {
+      return false;
+    }
+  }),
   function (req, res, next) {
     try {
       validationResult(req).throw();
-      isYYYYMMDD = Date.parse(req.params.date);
-      if (isNaN(isYYYYMMDD)) {
-        date = new Date(parseInt(req.params.date));
-      } else {
+      isNotNumeric = Date.parse(req.params.date);
+      if (isNotNumeric) {
         date = new Date(req.params.date);
+      } else {
+        date = new Date(parseInt(req.params.date));
       }
       utc = date.toUTCString();
       unix = date.getTime();
@@ -45,7 +55,7 @@ app.get(
   }
 );
 
-app.get("/api/", function (req, res) {
+app.get("/api", function (req, res) {
   date = new Date();
   utc = date.toUTCString();
   unix = date.getTime();
