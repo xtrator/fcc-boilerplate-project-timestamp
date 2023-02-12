@@ -24,8 +24,6 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-// second test
-// third test
 app.get(
   "/api/:date",
   oneOf([check("date").isDate(), check("date").isNumeric()]),
@@ -46,6 +44,13 @@ app.get(
     }
   }
 );
+
+app.get("/api/", function (req, res) {
+  date = new Date();
+  utc = date.toUTCString();
+  unix = date.getTime();
+  res.json({ unix, utc });
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
