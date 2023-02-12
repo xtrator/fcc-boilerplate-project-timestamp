@@ -4,6 +4,7 @@
 // init project
 var express = require("express");
 var app = express();
+const { param, validationResult } = require("express-validator");
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
@@ -21,6 +22,18 @@ app.get("/", function (req, res) {
 // your first API endpoint...
 app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
+});
+
+// first test
+app.get("/api/:date", param("date").isDate(), function (req, res, next) {
+  try {
+    validationResult(req).throw();
+    date = new Date(req.params.date);
+    unix = date.getTime();
+    res.json({ unix });
+  } catch (err) {
+    res.status(400).json({ error: err });
+  }
 });
 
 // listen for requests :)
