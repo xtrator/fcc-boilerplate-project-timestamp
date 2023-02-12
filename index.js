@@ -4,7 +4,7 @@
 // init project
 var express = require("express");
 var app = express();
-const { param, validationResult } = require("express-validator");
+const { check, oneOf, validationResult } = require("express-validator");
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
@@ -26,17 +26,26 @@ app.get("/api/hello", function (req, res) {
 
 // second test
 // third test
-app.get("/api/:date", param("date").isDate(), function (req, res, next) {
-  try {
-    validationResult(req).throw();
-    date = new Date(req.params.date);
-    utc = date.toUTCString();
-    unix = date.getTime();
-    res.json({ unix, utc });
-  } catch (err) {
-    res.status(400).json({ error: err });
+app.get(
+  "/api/:date",
+  oneOf([check("date").isDate(), check("date").isNumeric()]),
+  function (req, res, next) {
+    try {
+      validationResult(req).throw();
+      isYYYYMMDD = Date.parse(req.params.date);
+      if (isNaN(isYYYYMMDD)) {
+        date = new Date(parseInt(req.params.date));
+      } else {
+        date = new Date(req.params.date);
+      }
+      utc = date.toUTCString();
+      unix = date.getTime();
+      res.json({ unix, utc });
+    } catch (err) {
+      res.status(400).json({ error: "Invalid Date" });
+    }
   }
-});
+);
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
